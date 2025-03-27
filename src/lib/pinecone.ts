@@ -1,18 +1,22 @@
-import { Pinecone } from "@pinecone-database/pinecone";
+import { Pinecone, IntegratedRecord } from "@pinecone-database/pinecone";
 import { downloadFromS3 } from "./s3-server";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import {
   Document,
   RecursiveCharacterTextSplitter,
 } from "@pinecone-database/doc-splitter";
+import { getEmbeddings } from "./embeddings";
+
+import md5 from "md5";
+import { Vector } from "@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch/db_data";
+import { convertToAscii } from "./utils";
 
 export const getPineconeClient = async () => {
   const pinecone = new Pinecone({
     apiKey: process.env.PINECONE_API_KEY!,
   });
 
-  const index = pinecone.index(process.env.PINECONE_INDEX!);
-  return index;
+  return pinecone;
 };
 
 type PDFPage = {
@@ -36,7 +40,43 @@ export async function loadS3IntoPinecone(file_key: string) {
   //pages=Array(10)
   const documents = await Promise.all(pages.map(prepareDocument));
   //documents = Array(100)
-  return pages;
+
+  //3. Vectorise and embed individual documents
+  const vectors = await Promise.all(documents.flat().map(embedDocument));
+
+  // 4. Upload to Pincone
+  const client = await getPineconeClient();
+  const pineconeIndex = client.index(process.env.PINECONE_INDEX!);
+
+  const namespace = convertToAscii(file_key);
+
+  pineconeIndex.namespace(namespace).upsert(
+    vectors.map((item) => ({
+      id: item.id,
+      values: item.values,
+    }))
+  );
+
+  return documents[0];
+}
+
+export async function embedDocument(doc: Document) {
+  try {
+    const embeddings = await getEmbeddings(doc.pageContent);
+    const hash = md5(doc.pageContent);
+
+    return {
+      id: hash,
+      values: embeddings,
+      metadata: {
+        text: doc.metadata.text,
+        pageNumber: doc.metadata.pageNumber,
+      },
+    } as Vector;
+  } catch (error) {
+    console.error("Error embedding documents", error);
+    throw error;
+  }
 }
 
 export const truncateStringByByte = (str: string, bytes: number) => {
@@ -58,4 +98,6 @@ async function prepareDocument(page: PDFPage) {
       },
     }),
   ]);
+
+  return docs;
 }
