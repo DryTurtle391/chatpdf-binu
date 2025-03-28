@@ -10,7 +10,7 @@ export async function POST(req: Request, res: Response) {
   const { userId } = await auth();
 
   if (!userId) {
-    return NextResponse.json({ error: "Uauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   try {
     const body = await req.json();
@@ -31,9 +31,12 @@ export async function POST(req: Request, res: Response) {
         userId,
       })
       .returning({
-        insertedid: chats.id,
+        insertedId: chats.id,
       });
-    return NextResponse.json({ docSegment });
+    return NextResponse.json(
+      { chat_id: chat_id[0].insertedId },
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
