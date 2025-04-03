@@ -29,7 +29,9 @@ export async function getMatchesFromEmbeddings(
 
 export async function getContext(query: string, fileKey: string) {
   const queryEmbeddings = await getEmbeddings(query);
+  console.log("QUERY EMBEDDINGS: ", queryEmbeddings);
   const matches = await getMatchesFromEmbeddings(queryEmbeddings, fileKey);
+  console.log("MATCHES: ", matches);
 
   const qualifyingDocs = matches.filter(
     (match) => match.score && match.score > 0.7
@@ -40,6 +42,6 @@ export async function getContext(query: string, fileKey: string) {
     pageNumber: number;
   };
 
-  const docs = qualifyingDocs.map((doc) => doc.metadata as Metadata);
+  const docs = qualifyingDocs.map((doc) => (doc.metadata as Metadata).text);
   return docs.join("\n").substring(0, 3000);
 }

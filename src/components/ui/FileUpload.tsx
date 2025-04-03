@@ -64,6 +64,7 @@ const FileUpload = () => {
       }
     },
   });
+
   return (
     <div className="p-2 bg-white rounded-2xl">
       <div

@@ -1,4 +1,8 @@
-import { Pinecone, IntegratedRecord } from "@pinecone-database/pinecone";
+import {
+  Pinecone,
+  IntegratedRecord,
+  RecordMetadata,
+} from "@pinecone-database/pinecone";
 import { downloadFromS3 } from "./s3-server";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import {
@@ -44,16 +48,22 @@ export async function loadS3IntoPinecone(file_key: string) {
   //3. Vectorise and embed individual documents
   const vectors = await Promise.all(documents.flat().map(embedDocument));
 
+  console.log("VECTOR EMBEDDINGS: ", vectors);
+
   // 4. Upload to Pincone
   const client = await getPineconeClient();
-  const pineconeIndex = client.index(process.env.PINECONE_INDEX!);
+  const pineconeIndex = client.index(
+    process.env.PINECONE_INDEX!,
+    process.env.PINECONE_INDEX_HOST!
+  );
 
   const namespace = convertToAscii(file_key);
 
-  pineconeIndex.namespace(namespace).upsert(
+  await pineconeIndex.namespace(namespace).upsert(
     vectors.map((item) => ({
       id: item.id,
       values: item.values,
+      metadata: item.metadata as RecordMetadata,
     }))
   );
 

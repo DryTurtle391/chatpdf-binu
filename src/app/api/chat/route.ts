@@ -2,12 +2,13 @@ import { OpenAIApi, Configuration } from "openai-edge";
 import { Message, streamText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { db } from "@/lib/db";
-import { chats } from "@/lib/db/schema";
+import { chats, messages as _messages } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { getContext } from "@/lib/context";
 
-const runtime = "edge";
+/* export const runtime = "edge";
+ */
 const config = {
   apiKey: process.env.OPENAI_API_KEY,
 };
@@ -23,8 +24,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "chat not found" }, { status: 404 });
     }
     const lastMessage = messages[messages.length - 1];
+    type Metadata = {
+      text: string;
+      pageNumber: number;
+    };
     const context = await getContext(lastMessage.content, _chats[0].fileKey);
-
+    console.log(lastMessage.content, _chats[0].fileKey);
     const prompt = {
       role: "system",
       content: `AI assistant is a brand new, powerful, human-like artificial intelligence.
@@ -43,13 +48,33 @@ export async function POST(req: Request) {
       `,
     };
 
-    const result = streamText({
+    console.log("PROMPT: ", prompt);
+
+    const result = await streamText({
       model: openai("gpt-3.5-turbo"),
       messages: [
         prompt,
         ...messages.filter((message: Message) => message.role === "user"),
       ],
+      onFinish: async (completion) => {
+        if (userChat) {
+          await db.insert(_messages).values({
+            chatId,
+            content: completion.text,
+            role: "system",
+          });
+
+          console.log("FINISHED: ", completion);
+        }
+      },
     });
+
+    const userChat = await db.insert(_messages).values({
+      chatId,
+      content: lastMessage.content,
+      role: "user",
+    });
+    console.log("STARTED!");
 
     return result.toDataStreamResponse();
   } catch (error) {
