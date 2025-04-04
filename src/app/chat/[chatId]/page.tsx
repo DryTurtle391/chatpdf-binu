@@ -10,9 +10,9 @@ import React from "react";
 // import { PageProps } from "../../../../.next/types/app/layout";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     chatId: string;
-  };
+  }>;
 }
 /* type Props = Promise<{
   params: {
@@ -21,8 +21,8 @@ interface PageProps {
 }>; */
 
 const ChatPage = async (props: PageProps) => {
-  const { params } = await props;
-  const { chatId } = params;
+  const { params } = props;
+  const { chatId } = await params;
   const { userId } = await auth();
   if (!userId) {
     return redirect("/sign-in");
