@@ -6,7 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 // /api/create-chat
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request /* res: Response */) {
   const { userId } = await auth();
 
   if (!userId) {
@@ -17,9 +17,9 @@ export async function POST(req: Request, res: Response) {
 
     const { file_key, file_name } = body;
     console.log(file_key, file_name);
-    const docSegment = await loadS3IntoPinecone(file_key);
+    //const docSegment = await loadS3IntoPinecone(file_key);
 
-    type ChatsInsertType = typeof chats.$inferInsert;
+    //type ChatsInsertType = typeof chats.$inferInsert;
     // Hover over `ChatsInsertType` in your IDE to inspect the type
 
     const chat_id = await db

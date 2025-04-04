@@ -1,5 +1,5 @@
 "use client";
-import { getS3Url, uploadToS3 } from "@/lib/s3";
+import { /* getS3Url, */ uploadToS3 } from "@/lib/s3";
 import { useMutation } from "@tanstack/react-query";
 import { Inbox, Loader2 } from "lucide-react";
 import React from "react";
@@ -16,8 +16,8 @@ const FileUpload = () => {
       file_key,
       file_name,
     }: {
-      file_key: String;
-      file_name: String;
+      file_key: string;
+      file_name: string;
     }) => {
       const response = await axios.post("/api/create-chat", {
         file_key,

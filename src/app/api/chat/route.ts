@@ -1,4 +1,4 @@
-import { OpenAIApi, Configuration } from "openai-edge";
+// import { OpenAIApi, Configuration } from "openai-edge";
 import { Message, streamText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { db } from "@/lib/db";
@@ -24,10 +24,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "chat not found" }, { status: 404 });
     }
     const lastMessage = messages[messages.length - 1];
-    type Metadata = {
-      text: string;
-      pageNumber: number;
-    };
+
     const context = await getContext(lastMessage.content, _chats[0].fileKey);
     console.log(lastMessage.content, _chats[0].fileKey);
     const prompt = {

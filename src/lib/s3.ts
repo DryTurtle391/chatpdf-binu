@@ -33,14 +33,16 @@ export async function uploadToS3(file: File) {
       .promise();
 
     await upload.then((data) => {
-      console.log("Successfully Uploaded to S3!" + file_key);
+      console.log("Successfully Uploaded to S3!" + data);
     });
 
     return Promise.resolve({
       file_key,
       file_name: file.name,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("ERROR IN UPLOAD TO S3: ", error);
+  }
 }
 
 export function getS3Url(file_key: string) {
@@ -48,5 +50,7 @@ export function getS3Url(file_key: string) {
     const url = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.eu-north-1.amazonaws.com/${file_key}`;
 
     return url;
-  } catch (error) {}
+  } catch (error) {
+    console.error("ERROR IN GET S3 URL: ", error);
+  }
 }

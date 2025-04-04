@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import Image from "next/image";
+// import Image from "next/image";
 import { LogIn } from "lucide-react";
 import FileUpload from "@/components/ui/FileUpload";
 import { chats } from "@/lib/db/schema";

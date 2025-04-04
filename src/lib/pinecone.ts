@@ -1,6 +1,6 @@
 import {
   Pinecone,
-  IntegratedRecord,
+  // IntegratedRecord,
   RecordMetadata,
 } from "@pinecone-database/pinecone";
 import { downloadFromS3 } from "./s3-server";
@@ -95,7 +95,8 @@ export const truncateStringByByte = (str: string, bytes: number) => {
 };
 
 async function prepareDocument(page: PDFPage) {
-  let { pageContent, metadata } = page;
+  let { pageContent } = page;
+  const { metadata } = page;
   pageContent = pageContent.replace(/\n/g, "");
   //split the docs
   const splitter = new RecursiveCharacterTextSplitter();
