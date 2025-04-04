@@ -22,7 +22,7 @@ const ChatSideBar = ({ chats, chatId }: Props) => {
 
       <div className="flex flex-col gap-2 mt-4">
         {chats.map((chat) => (
-          <Link href={`/chat/${chatId}`}>
+          <Link href={`/chat/${chat.id}`}>
             <div
               className={cn("rounded-lg p-3 text-slate-300 flex items-center", {
                 "bg-blue-600 text-white": chatId == chat.id,

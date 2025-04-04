@@ -5,10 +5,22 @@ import Link from "next/link";
 import Image from "next/image";
 import { LogIn } from "lucide-react";
 import FileUpload from "@/components/ui/FileUpload";
+import { chats } from "@/lib/db/schema";
+import { desc, eq } from "drizzle-orm";
+import { db } from "@/lib/db";
 
 export default async function Home() {
   const { userId } = await auth();
   const isAuth = !!userId;
+  let latestChat;
+  if (isAuth) {
+    latestChat = await db
+      .select()
+      .from(chats)
+      .where(eq(chats.userId, userId))
+      .orderBy(desc(chats.id))
+      .limit(1);
+  }
   return (
     <div className="w-screen min-h-screen bg-gradient-to-r from-gray-200 via-gray-400 to-gray-600">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -20,7 +32,14 @@ export default async function Home() {
             </div>
           </div>
           <div className="flex mt-8">
-            {isAuth && <Button>Go to Chats</Button>}
+            {isAuth && latestChat && (
+              <Link
+                href={`/chat/${latestChat[0].id}`}
+                className="cursor-pointer"
+              >
+                <Button>Go to Chats</Button>
+              </Link>
+            )}
           </div>
           <p className="max-w-xl mt-2 text-lg text-black-600">
             Join millions of students, researchers and professionals to
