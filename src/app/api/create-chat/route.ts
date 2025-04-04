@@ -17,8 +17,9 @@ export async function POST(req: Request /* res: Response */) {
 
     const { file_key, file_name } = body;
     console.log(file_key, file_name);
-    await loadS3IntoPinecone(file_key);
+    const docSegment = await loadS3IntoPinecone(file_key);
 
+    console.log("DOC SEGMENT FROM PINECONE: ", docSegment);
     //type ChatsInsertType = typeof chats.$inferInsert;
     // Hover over `ChatsInsertType` in your IDE to inspect the type
 
