@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-// import { loadS3IntoPinecone } from "@/lib/pinecone";
+import { loadS3IntoPinecone } from "@/lib/pinecone";
 import { getS3Url } from "@/lib/s3";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -17,7 +17,7 @@ export async function POST(req: Request /* res: Response */) {
 
     const { file_key, file_name } = body;
     console.log(file_key, file_name);
-    //const docSegment = await loadS3IntoPinecone(file_key);
+    await loadS3IntoPinecone(file_key);
 
     //type ChatsInsertType = typeof chats.$inferInsert;
     // Hover over `ChatsInsertType` in your IDE to inspect the type
