@@ -7,14 +7,20 @@ import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import React from "react";
+// import { PageProps } from "../../../../.next/types/app/layout";
 
-type Props = Promise<{
+interface PageProps {
   params: {
     chatId: string;
   };
-}>;
+}
+/* type Props = Promise<{
+  params: {
+    chatId: string;
+  };
+}>; */
 
-const ChatPage = async (props: Props) => {
+const ChatPage = async (props: PageProps) => {
   const { params } = await props;
   const { chatId } = params;
   const { userId } = await auth();
