@@ -5,7 +5,6 @@ import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
-import { NextPage } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -15,7 +14,8 @@ type Props = {
   };
 };
 
-const ChatPage: NextPage<Props> = async ({ params }) => {
+const ChatPage = async ({ params }: Props) => {
+  // const details = await props.details;
   const { chatId } = params;
   const { userId } = await auth();
   if (!userId) {
