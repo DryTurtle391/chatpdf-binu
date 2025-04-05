@@ -1,5 +1,7 @@
 import AWS from "aws-sdk";
 import fs from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
 
 export async function downloadFromS3(file_key: string) {
   try {
@@ -21,7 +23,7 @@ export async function downloadFromS3(file_key: string) {
 
     const obj = await s3.getObject(params).promise();
 
-    const file_name = `/tmp/pdf-${Date.now()}.pdf`;
+    const file_name = join(tmpdir(), `pdf-${Date.now()}.pdf`);
     fs.writeFileSync(file_name, obj.Body as Buffer);
 
     return file_name;
