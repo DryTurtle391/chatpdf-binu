@@ -6,13 +6,14 @@ import Link from "next/link";
 import { LogIn } from "lucide-react";
 import FileUpload from "@/components/ui/FileUpload";
 import { chats } from "@/lib/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, InferSelectModel } from "drizzle-orm";
 import { db } from "@/lib/db";
 
 export default async function Home() {
   const { userId } = await auth();
   const isAuth = !!userId;
-  let latestChat;
+  let latestChat: InferSelectModel<typeof chats>[] = [];
+  console.log(userId, isAuth);
   if (isAuth) {
     latestChat = await db
       .select()
@@ -32,7 +33,7 @@ export default async function Home() {
             </div>
           </div>
           <div className="flex mt-8">
-            {isAuth && latestChat && (
+            {isAuth && latestChat?.length != 0 && (
               <Link
                 href={`/chat/${latestChat[0].id}`}
                 className="cursor-pointer"
