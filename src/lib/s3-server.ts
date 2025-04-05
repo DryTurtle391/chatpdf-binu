@@ -21,12 +21,12 @@ export async function downloadFromS3(file_key: string) {
 
     const obj = await s3.getObject(params).promise();
 
-    const file_name = `./tmp/pdf-${Date.now()}.pdf`;
+    const file_name = `/tmp/pdf-${Date.now()}.pdf`;
     fs.writeFileSync(file_name, obj.Body as Buffer);
 
     return file_name;
   } catch (error) {
-    console.error(error);
+    console.error("ERROR IN DOWNLOAD FROM S3: ", error);
     return null;
   }
 }

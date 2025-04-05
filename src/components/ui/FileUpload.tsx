@@ -52,7 +52,7 @@ const FileUpload = () => {
           },
           onError: (error) => {
             toast.error("Error in creating chat: " + error);
-            console.error(error);
+            console.error("ERROR IN CREATING CHAT: ", error);
           },
         });
         console.log("data", data);
